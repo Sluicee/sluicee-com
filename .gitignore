@@ -11,3 +11,5 @@ dist-ssr
 
 # PocketBase data (runtime DB — миграции схемы в pb_migrations/ версионируются)
 pb_data
+
+deploy

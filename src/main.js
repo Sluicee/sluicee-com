@@ -62,7 +62,7 @@ function createProjectCard(project, index) {
   const href = project.link || project.github;
 
   const card = document.createElement('a');
-  card.className = `k-m k-proj ${index % 2 === 0 ? 'p1' : 'p2'}${hasDescription ? '' : ' is-todo'}`;
+  card.className = `k-m k-proj ${index % 2 === 0 ? 'p1' : 'p2'}${hasDescription ? '' : ' is-todo'}${project.featured ? ' is-featured' : ''}`;
   card.href = href || '#';
   if (href) {
     card.target = '_blank';
@@ -75,6 +75,14 @@ function createProjectCard(project, index) {
   const obiLabel = document.createElement('span');
   obiLabel.textContent = code;
   obi.appendChild(obiLabel);
+
+  if (project.featured) {
+    const stamp = document.createElement('span');
+    stamp.className = 'k-proj-featured';
+    stamp.setAttribute('aria-hidden', 'true');
+    stamp.textContent = '推薦';
+    card.appendChild(stamp);
+  }
 
   const title = document.createElement('h4');
   title.textContent = project.title;
@@ -93,6 +101,19 @@ function createProjectCard(project, index) {
       tracks.appendChild(tagEl);
     });
     card.appendChild(tracks);
+  }
+
+  // Если есть и сайт, и гитхаб — карточка ведёт на сайт, а гитхаб остаётся
+  // отдельной текстовой ссылкой (иначе он был бы вообще недостижим).
+  if (project.link && project.github) {
+    const gh = document.createElement('a');
+    gh.className = 'k-cap k-proj-gh';
+    gh.href = project.github;
+    gh.target = '_blank';
+    gh.rel = 'noopener noreferrer';
+    gh.textContent = 'github ↗';
+    gh.addEventListener('click', (event) => event.stopPropagation());
+    card.appendChild(gh);
   }
 
   return card;

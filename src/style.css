@@ -278,6 +278,15 @@ a {
 }
 .page .k-proj.is-todo p { font-style: italic; }
 .page .k-proj.is-todo .k-cap { color: var(--k-mute); }
+.page .k-proj .k-proj-gh { position: relative; z-index: 1; width: fit-content; }
+.page .k-proj .k-proj-gh:hover { color: var(--k-blue); text-decoration: underline; text-underline-offset: 2px; }
+.page .k-proj.is-featured { box-shadow: 3px 3px 0 rgba(210,57,43,.3); }
+.page .k-proj-featured {
+  position: absolute; right: 9px; top: 9px; width: 32px; height: 32px; border-radius: 50%;
+  border: 2px double var(--k-red); color: var(--k-red); background: var(--k-card);
+  display: grid; place-items: center; transform: rotate(-11deg); opacity: .85;
+  font-family: "Zen Old Mincho", serif; font-size: 9px; line-height: 1; letter-spacing: .02em;
+}
 
 @media (min-width: 1000px) { .page .k-memo { grid-column: span 6; transform: rotate(.6deg); } }
 .page .k-memo { background: var(--k-card); border-top: 3px solid var(--k-red); display: grid; gap: 8px; }

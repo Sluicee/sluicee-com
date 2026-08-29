@@ -1,0 +1,25 @@
+services:
+  # Фронтенд-приложение (Vite)
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_POCKETBASE_URL=http://localhost:8090
+    depends_on:
+      - pocketbase
+    restart: unless-stopped
+
+  # Панель управления, база данных и REST API (PocketBase)
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    ports:
+      - "8090:8090"
+    volumes:
+      - pb_data:/pb_data
+    restart: unless-stopped
+
+volumes:
+  pb_data:

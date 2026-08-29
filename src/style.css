@@ -49,7 +49,7 @@ a {
 @media (min-width: 1000px) {
   .page .k-obi {
     display: grid; align-content: space-between; justify-items: center;
-    position: absolute; left: 0; top: 0; bottom: 0; width: 46px; z-index: 3;
+    position: fixed; left: 0; top: 0; bottom: 0; width: 46px; z-index: 3;
     background: var(--k-red); color: #F3EFE2; padding: 16px 0 14px;
   }
   .page .k-obi .v {

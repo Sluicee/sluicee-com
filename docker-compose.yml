@@ -19,7 +19,8 @@ services:
       - "8090:8090"
     volumes:
       - pb_data:/pb_data
-      - ./pb_migrations:/pb_migrations:ro
+      - ./pb_migrations:/pb_migrations
+      - ./pb_hooks:/pb_hooks:ro
     restart: unless-stopped
 
 volumes:

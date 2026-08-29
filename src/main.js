@@ -1,4 +1,5 @@
 import './style.css';
+import { pb } from './lib/pocketbase.js';
 import { getProjects } from './services/projects.js';
 
 // 24 сэкки — настоящий сегмент традиционного календаря по дате в браузере.
@@ -130,10 +131,24 @@ function wireTrackRoll() {
   });
 }
 
+async function renderHits() {
+  const el = document.querySelector('[data-hits]');
+  if (!el) return;
+  try {
+    const res = await fetch(`${pb.baseUrl}/api/hits`, { method: 'POST' });
+    if (!res.ok) return;
+    const { count } = await res.json();
+    el.textContent = String(count).padStart(7, '0');
+  } catch {
+    // офлайн или PocketBase недоступен — просто не показываем счётчик
+  }
+}
+
 async function initApp() {
   renderSekki();
   wireTrackRoll();
   await renderProjects();
+  renderHits();
 }
 
 initApp();

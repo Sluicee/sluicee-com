@@ -453,6 +453,13 @@ a {
 .page .k-88.b { background: var(--k-blue); color: #EDEADF; }
 .page .k-88.c { background: var(--k-red); color: #F6F2E5; }
 .page .k-88.d { background: var(--k-yel); color: var(--k-ink); }
+.page button.k-88 { appearance: none; -webkit-appearance: none; font: inherit; cursor: pointer; }
+.page .k-88.e {
+  background: var(--k-card); border: 1.5px double var(--k-red); color: var(--k-red);
+  font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; letter-spacing: .08em;
+}
+.page .k-88.e:hover { background: var(--k-red); color: #F6F2E5; }
+.page .k-88.e:focus-visible { outline: 2px solid var(--k-blue); outline-offset: 2px; }
 .page .k-hits {
   font-family: "DotGothic16", monospace; font-size: 15px; letter-spacing: .18em;
   background: var(--k-ink); color: var(--k-yel); padding: 6px 10px 7px;

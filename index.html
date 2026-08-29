@@ -39,21 +39,21 @@
 
         <div class="k-m k-stamp">
           <span class="k-cap">nippon · 日本</span>
-          <span class="big"><span data-sekki-jp>—</span> · <span data-sekki-ru>—</span></span>
+          <span class="big"><span data-sekki-jp>—</span><span data-sekki-gloss>—</span></span>
           <span class="m"><span data-postmark-date>—</span></span>
         </div>
 
         <div class="k-m k-bio k-tape">
-          <p>
+          <p data-i18n-html="bio.poem">
             Стыдно заниматься искусством если, по ходу<br>
             Конец не встретишь самоубийством или дуркой<br><br>
             Делаю сервисы для своих. Заработать на этом не получается.
           </p>
-          <div class="k-marg"><span>↖</span><span>Энтузиаст, вайб-кодер, японофил, мерзавец, подлец, себялюбец, лентяй</span></div>
+          <div class="k-marg"><span>↖</span><span data-i18n="bio.tags">Энтузиаст, вайб-кодер, японофил, мерзавец, подлец, себялюбец, лентяй</span></div>
         </div>
 
         <div class="k-m k-social">
-          <span class="k-cap">連絡先 · где меня найти</span>
+          <span class="k-cap" data-i18n="social.cap">連絡先 · где меня найти</span>
           <div class="k-stickers">
             <a href="https://github.com/Sluicee" target="_blank" rel="noopener noreferrer">github</a>
             <a href="https://t.me/sluicee" target="_blank" rel="noopener noreferrer">telegram</a>
@@ -83,11 +83,11 @@
         <div class="k-m k-memo">
           <p class="frag" data-sekki-sentence>—</p>
           <div class="stampline">※ 転載禁止</div>
-          <span class="k-cap">рендерится в 1024×768</span>
+          <span class="k-cap" data-i18n="memo.caption">рендерится в 1024×768</span>
         </div>
 
         <div class="k-sec">
-          <h3>記録</h3><span class="en">кино и музыка</span><span class="n">обновляется само</span>
+          <h3>記録</h3><span class="en" data-i18n="media.subtitle">кино и музыка</span><span class="n" data-i18n="media.note">обновляется само</span>
         </div>
 
         <a class="k-m k-still" data-film-link href="https://letterboxd.com/sluicee/" target="_blank" rel="noopener noreferrer">
@@ -116,7 +116,7 @@
           <span class="side" data-track-label>—</span>
           <a class="trk" data-track href="#" target="_blank" rel="noopener noreferrer">—</a>
           <span class="m" data-track-sub>—</span>
-          <button type="button" data-roll>▶ перемотать</button>
+          <button type="button" data-roll data-i18n="tape.reroll">▶ перемотать</button>
         </div>
 
         <div class="k-sec">
@@ -126,25 +126,25 @@
         <div class="k-m k-guestbook" id="guestbook">
           <form class="k-guest-form" data-guestbook-form novalidate>
             <label class="k-guest-field k-guest-name">
-              <span class="k-cap">имя (необязательно)</span>
-              <input type="text" name="name" maxlength="60" placeholder="аноним" autocomplete="off">
+              <span class="k-cap" data-i18n="guest.name.label">имя (необязательно)</span>
+              <input type="text" name="name" maxlength="60" placeholder="аноним" data-i18n-placeholder="guest.name.placeholder" autocomplete="off">
             </label>
             <label class="k-guest-field k-guest-message">
-              <span class="k-cap">сообщение</span>
-              <textarea name="message" maxlength="500" rows="3" required placeholder="что скажешь"></textarea>
+              <span class="k-cap" data-i18n="guest.message.label">сообщение</span>
+              <textarea name="message" maxlength="500" rows="3" required placeholder="что скажешь" data-i18n-placeholder="guest.message.placeholder"></textarea>
             </label>
             <label class="k-guest-hp" aria-hidden="true" tabindex="-1">
-              сайт
+              <span data-i18n="guest.hp.label">сайт</span>
               <input type="text" name="hp_field" tabindex="-1" autocomplete="off">
             </label>
             <div class="k-guest-actions">
-              <button type="submit">оставить запись</button>
+              <button type="submit" data-i18n="guest.submit">оставить запись</button>
               <span class="k-guest-status" data-guestbook-status></span>
             </div>
           </form>
 
           <div class="k-guest-list" data-guestbook-list>
-            <p class="k-guest-empty" data-guestbook-empty>записей пока нет — будь первым</p>
+            <p class="k-guest-empty" data-guestbook-empty data-i18n="guest.empty">записей пока нет — будь первым</p>
           </div>
         </div>
 
@@ -155,12 +155,13 @@
             <span class="k-88 b">no ads<br>no analytics</span>
             <a class="k-88 c" data-rss-link href="#" target="_blank" rel="noopener noreferrer">rss<br>atom feed</a>
             <span class="k-88 d">since<br>2025</span>
+            <button type="button" class="k-88 e" data-lang-switch aria-label="language">RU</button>
             <span class="k-ring">← 環 · webring · 環 →</span>
             <span class="k-hits" data-hits>——————</span>
           </div>
           <div class="k-foot">
-            <span>© <span data-year>2026</span> sluicee · <a href="https://github.com/Sluicee/sluicee-com" target="_blank" rel="noopener noreferrer">исходники</a> · <a data-rss-link href="#" target="_blank" rel="noopener noreferrer">rss</a> · <a href="#guestbook">гостевая книга</a></span>
-            <span>сделано дома · 自宅にて</span>
+            <span>© <span data-year>2026</span> sluicee · <a href="https://github.com/Sluicee/sluicee-com" target="_blank" rel="noopener noreferrer" data-i18n="foot.sources">исходники</a> · <a data-rss-link href="#" target="_blank" rel="noopener noreferrer">rss</a> · <a href="#guestbook" data-i18n="foot.guestbook">гостевая книга</a></span>
+            <span data-i18n="foot.madeAtHome">сделано дома · 自宅にて</span>
           </div>
         </div>
 

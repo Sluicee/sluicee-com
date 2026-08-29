@@ -1,24 +1,25 @@
 import './style.css';
 import { pb } from './lib/pocketbase.js';
 import { getProjects } from './services/projects.js';
+import { t, getLang, onLangChange, cycleLang, initI18n, MONTHS_SHORT } from './i18n.js';
 
 // 24 сэкки — настоящий сегмент традиционного календаря по дате в браузере.
+// [месяц, день, кандзи, ru-глосса, en-глосса]; ja-глосса не нужна — кандзи уже японский.
 const SEKKI = [
-  [0, 4, '小寒', 'малые холода'], [0, 20, '大寒', 'разгар холода'],
-  [1, 4, '立春', 'первый вдох весны'], [1, 19, '雨水', 'снег становится дождём'],
-  [2, 5, '啓蟄', 'просыпаются насекомые'], [2, 20, '春分', 'весеннее равноденствие'],
-  [3, 5, '清明', 'воздух ясен'], [3, 20, '穀雨', 'дожди для всходов'],
-  [4, 5, '立夏', 'начало лета'], [4, 21, '小満', 'всё понемногу наливается'],
-  [5, 5, '芒種', 'пора сева'], [5, 21, '夏至', 'летнее солнцестояние'],
-  [6, 7, '小暑', 'жара нарастает'], [6, 22, '大暑', 'разгар жары'],
-  [7, 7, '立秋', 'первый вдох осени'], [7, 23, '処暑', 'жар отступает'],
-  [8, 7, '白露', 'белая роса'], [8, 23, '秋分', 'осеннее равноденствие'],
-  [9, 8, '寒露', 'холодная роса'], [9, 23, '霜降', 'первый иней'],
-  [10, 7, '立冬', 'начало зимы'], [10, 22, '小雪', 'первый снег'],
-  [11, 7, '大雪', 'снегопады'], [11, 21, '冬至', 'зимнее солнцестояние']
+  [0, 4, '小寒', 'малые холода', 'minor cold'], [0, 20, '大寒', 'разгар холода', 'the depth of cold'],
+  [1, 4, '立春', 'первый вдох весны', "spring's first breath"], [1, 19, '雨水', 'снег становится дождём', 'snow turns to rain'],
+  [2, 5, '啓蟄', 'просыпаются насекомые', 'insects awaken'], [2, 20, '春分', 'весеннее равноденствие', 'spring equinox'],
+  [3, 5, '清明', 'воздух ясен', 'the air turns clear'], [3, 20, '穀雨', 'дожди для всходов', 'rains for the seedlings'],
+  [4, 5, '立夏', 'начало лета', 'summer begins'], [4, 21, '小満', 'всё понемногу наливается', 'everything slowly ripens'],
+  [5, 5, '芒種', 'пора сева', 'sowing time'], [5, 21, '夏至', 'летнее солнцестояние', 'summer solstice'],
+  [6, 7, '小暑', 'жара нарастает', 'the heat builds'], [6, 22, '大暑', 'разгар жары', 'the height of heat'],
+  [7, 7, '立秋', 'первый вдох осени', "autumn's first breath"], [7, 23, '処暑', 'жар отступает', 'the heat recedes'],
+  [8, 7, '白露', 'белая роса', 'white dew'], [8, 23, '秋分', 'осеннее равноденствие', 'autumn equinox'],
+  [9, 8, '寒露', 'холодная роса', 'cold dew'], [9, 23, '霜降', 'первый иней', 'first frost'],
+  [10, 7, '立冬', 'начало зимы', 'winter begins'], [10, 22, '小雪', 'первый снег', 'first snow'],
+  [11, 7, '大雪', 'снегопады', 'heavy snow'], [11, 21, '冬至', 'зимнее солнцестояние', 'winter solstice']
 ];
 const ROMAN_MONTHS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
-const MONTHS_RU_SHORT = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 
 const LASTFM_USER = 'Sluicee1';
 const LASTFM_API_KEY = import.meta.env.VITE_LASTFM_API_KEY;
@@ -39,16 +40,19 @@ function renderSekki() {
     const [month, day] = entry;
     if (new Date(now.getFullYear(), month, day) <= now) current = entry;
   }
-  const [, , jp, ru] = current;
+  const [, , jp, ru, en] = current;
+  const gloss = { ru, en, ja: '' }[getLang()];
   const dd = String(now.getDate()).padStart(2, '0');
 
   document.querySelectorAll('[data-sekki-jp]').forEach((el) => { el.textContent = jp; });
-  document.querySelectorAll('[data-sekki-ru]').forEach((el) => { el.textContent = ru; });
+  document.querySelectorAll('[data-sekki-gloss]').forEach((el) => { el.textContent = gloss ? ` · ${gloss}` : ''; });
   document.querySelectorAll('[data-postmark-date]').forEach((el) => {
     el.textContent = `${dd}. ${ROMAN_MONTHS[now.getMonth()]}`;
   });
   document.querySelectorAll('[data-sekki-sentence]').forEach((el) => {
-    el.textContent = `Сейчас — «${jp}», ${ru}.`;
+    el.textContent = gloss
+      ? t('sekki.sentenceWithGloss', { jp, gloss })
+      : t('sekki.sentenceNoGloss', { jp });
   });
 }
 
@@ -76,7 +80,7 @@ function createProjectCard(project, index) {
   title.textContent = project.title;
 
   const description = document.createElement('p');
-  description.textContent = hasDescription ? project.description : '— одно предложение о проекте —';
+  description.textContent = hasDescription ? project.description : t('projects.todoDesc');
 
   card.append(obi, title, description);
 
@@ -94,29 +98,35 @@ function createProjectCard(project, index) {
   return card;
 }
 
-async function renderProjects() {
+let projectsCache = [];
+
+function applyProjectsText() {
   const list = document.querySelector('[data-projects-list]');
   const countEl = document.querySelector('[data-projects-count]');
   if (!list) return;
 
-  const { projects } = await getProjects();
-
   list.replaceChildren();
-  if (!projects.length) {
+  if (!projectsCache.length) {
     const empty = document.createElement('p');
     empty.className = 'k-projects-empty';
-    empty.textContent = 'проектов пока нет';
+    empty.textContent = t('projects.empty');
     list.appendChild(empty);
   } else {
-    projects.forEach((project, index) => {
+    projectsCache.forEach((project, index) => {
       list.appendChild(createProjectCard(project, index));
     });
   }
 
   if (countEl) {
-    const n = String(projects.length).padStart(2, '0');
-    countEl.textContent = `${n} позиций · список открыт`;
+    const n = String(projectsCache.length).padStart(2, '0');
+    countEl.textContent = t('projects.count', { n });
   }
+}
+
+async function renderProjects() {
+  const { projects } = await getProjects();
+  projectsCache = projects;
+  applyProjectsText();
 }
 
 function starsFromRating(rating) {
@@ -134,7 +144,7 @@ function formatDate(isoDate) {
 function formatDateLong(isoDate) {
   if (!isoDate) return '—';
   const [y, m, d] = isoDate.split('-').map(Number);
-  return `${String(d).padStart(2, '0')} ${MONTHS_RU_SHORT[m - 1]} ${y}`;
+  return `${String(d).padStart(2, '0')} ${MONTHS_SHORT[getLang()][m - 1]} ${y}`;
 }
 
 async function fetchMediaRecord(key) {
@@ -145,10 +155,11 @@ async function fetchMediaRecord(key) {
   }
 }
 
-async function renderFilm() {
-  const record = await fetchMediaRecord('film');
-  if (!record || !record.data) return;
-  const film = record.data;
+let filmCache = null;
+
+function applyFilmText() {
+  const film = filmCache;
+  if (!film) return;
 
   document.querySelectorAll('[data-film-link]').forEach((el) => { el.href = film.link || el.href; });
 
@@ -161,7 +172,7 @@ async function renderFilm() {
   if (reviewEl) reviewEl.textContent = film.review || `«${film.filmTitle}»`;
 
   const watchedEl = document.querySelector('[data-film-watched]');
-  if (watchedEl) watchedEl.textContent = `смотрел · ${formatDate(film.watchedDate)}`;
+  if (watchedEl) watchedEl.textContent = `${t('film.watched')} · ${formatDate(film.watchedDate)}`;
 
   const titleEl = document.querySelector('[data-film-title]');
   if (titleEl) titleEl.textContent = `${film.filmTitle} · ${film.filmYear}`;
@@ -181,6 +192,13 @@ async function renderFilm() {
   }
 }
 
+async function renderFilm() {
+  const record = await fetchMediaRecord('film');
+  if (!record || !record.data) return;
+  filmCache = record.data;
+  applyFilmText();
+}
+
 async function fetchLastfmTrack() {
   if (!LASTFM_API_KEY) return null;
   try {
@@ -192,7 +210,7 @@ async function fetchLastfmTrack() {
     if (!track) return null;
     const nowPlaying = track['@attr']?.nowplaying === 'true';
     return {
-      label: nowPlaying ? 'сейчас · last.fm' : 'последнее · last.fm',
+      labelKey: nowPlaying ? 'track.now' : 'track.last',
       text: `${track.artist?.['#text'] || ''} — ${track.name || ''}`,
       href: track.url || 'https://www.last.fm/user/' + LASTFM_USER,
     };
@@ -201,24 +219,27 @@ async function fetchLastfmTrack() {
   }
 }
 
-function applyTrack(track) {
+let tapeState = null;
+
+function applyTrack(state) {
+  tapeState = state;
   const label = document.querySelector('[data-track-label]');
   const link = document.querySelector('[data-track]');
   const sub = document.querySelector('[data-track-sub]');
-  if (label) label.textContent = track.label;
+  if (label) label.textContent = t(state.labelKey);
   if (link) {
-    link.textContent = track.text;
-    link.href = track.href;
+    link.textContent = state.textKey ? t(state.textKey) : state.text;
+    link.href = state.href;
   }
-  if (sub) sub.textContent = track.sub || '';
+  if (sub) sub.textContent = state.subKey ? t(state.subKey) : '';
 }
 
 async function renderTapeCard() {
   const lastfmTrack = await fetchLastfmTrack();
   if (lastfmTrack) {
-    applyTrack({ ...lastfmTrack, sub: 'перемотать → случайное видео из плейлиста' });
+    applyTrack({ ...lastfmTrack, subKey: 'track.rerollHint' });
   } else {
-    applyTrack({ label: 'плейлист · youtube', text: 'нажми «перемотать»', href: '#', sub: 'live-трек с last.fm недоступен' });
+    applyTrack({ labelKey: 'track.playlist', textKey: 'track.pressReroll', href: '#', subKey: 'track.lastfmUnavailable' });
   }
 
   const playlistRecord = await fetchMediaRecord('youtube_playlist');
@@ -233,10 +254,10 @@ async function renderTapeCard() {
         next = videos[Math.floor(Math.random() * videos.length)];
       }
       applyTrack({
-        label: 'видео · youtube',
+        labelKey: 'track.video',
         text: `${next.channel} — ${next.title}`,
         href: `https://www.youtube.com/watch?v=${next.id}`,
-        sub: 'случайное видео из плейлиста',
+        subKey: 'track.randomHint',
       });
     });
   });
@@ -306,7 +327,7 @@ function formatDateTime(pbDate) {
   const dd = String(date.getDate()).padStart(2, '0');
   const hh = String(date.getHours()).padStart(2, '0');
   const mm = String(date.getMinutes()).padStart(2, '0');
-  return `${dd} ${MONTHS_RU_SHORT[date.getMonth()]} ${date.getFullYear()}, ${hh}:${mm}`;
+  return `${dd} ${MONTHS_SHORT[getLang()][date.getMonth()]} ${date.getFullYear()}, ${hh}:${mm}`;
 }
 
 function createGuestEntry(entry) {
@@ -329,32 +350,36 @@ function createGuestEntry(entry) {
   return el;
 }
 
-async function renderGuestbook() {
+let guestEntries = [];
+
+function renderGuestList() {
   const list = document.querySelector('[data-guestbook-list]');
   const countEl = document.querySelector('[data-guestbook-count]');
+  if (!list) return;
+
+  list.replaceChildren();
+  if (!guestEntries.length) {
+    const empty = document.createElement('p');
+    empty.className = 'k-guest-empty';
+    empty.textContent = t('guest.empty');
+    list.appendChild(empty);
+  } else {
+    guestEntries.forEach((entry) => list.appendChild(createGuestEntry(entry)));
+  }
+  if (countEl) countEl.textContent = t('guest.count', { n: String(guestEntries.length).padStart(2, '0') });
+}
+
+async function renderGuestbook() {
+  const list = document.querySelector('[data-guestbook-list]');
   const form = document.querySelector('[data-guestbook-form]');
   if (!list || !form) return;
 
-  let entries = [];
   try {
-    entries = await pb.collection('guestbook').getFullList({ sort: '-created' });
+    guestEntries = await pb.collection('guestbook').getFullList({ sort: '-created' });
   } catch {
     // PocketBase недоступен — список останется пустым
   }
-
-  function renderList() {
-    list.replaceChildren();
-    if (!entries.length) {
-      const empty = document.createElement('p');
-      empty.className = 'k-guest-empty';
-      empty.textContent = 'записей пока нет — будь первым';
-      list.appendChild(empty);
-    } else {
-      entries.forEach((entry) => list.appendChild(createGuestEntry(entry)));
-    }
-    if (countEl) countEl.textContent = `${String(entries.length).padStart(2, '0')} записей`;
-  }
-  renderList();
+  renderGuestList();
 
   const statusEl = document.querySelector('[data-guestbook-status]');
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -366,7 +391,7 @@ async function renderGuestbook() {
     if (!message) return;
 
     submitBtn.disabled = true;
-    if (statusEl) { statusEl.textContent = 'отправляю…'; statusEl.classList.remove('is-error'); }
+    if (statusEl) { statusEl.textContent = t('guest.sending'); statusEl.classList.remove('is-error'); }
 
     try {
       const res = await fetch(`${pb.baseUrl}/api/guestbook`, {
@@ -382,14 +407,14 @@ async function renderGuestbook() {
       if (!res.ok || !data.ok) throw new Error(data.error || 'request failed');
 
       if (data.entry) {
-        entries = [data.entry, ...entries];
-        renderList();
+        guestEntries = [data.entry, ...guestEntries];
+        renderGuestList();
       }
       form.reset();
-      if (statusEl) statusEl.textContent = 'записано.';
+      if (statusEl) statusEl.textContent = t('guest.sent');
     } catch {
       if (statusEl) {
-        statusEl.textContent = 'не получилось отправить, попробуй ещё раз';
+        statusEl.textContent = t('guest.error');
         statusEl.classList.add('is-error');
       }
     } finally {
@@ -416,12 +441,28 @@ function hideLoader(startedAt) {
   }, delay);
 }
 
+function wireLangSwitch() {
+  document.querySelectorAll('[data-lang-switch]').forEach((btn) => {
+    btn.addEventListener('click', () => cycleLang());
+  });
+
+  onLangChange(() => {
+    renderSekki();
+    applyProjectsText();
+    applyFilmText();
+    if (tapeState) applyTrack(tapeState);
+    renderGuestList();
+  });
+}
+
 async function initApp() {
   const startedAt = performance.now();
 
+  initI18n();
   renderFooter();
   renderSekki();
   wireTiltCards();
+  wireLangSwitch();
 
   await Promise.allSettled([
     renderProjects(),

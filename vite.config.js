@@ -16,4 +16,7 @@ export default defineConfig({
   define: {
     __BUILD_STAMP__: JSON.stringify(gitHash ? `${buildDate} · ${gitHash}` : buildDate),
   },
+  preview: {
+    allowedHosts: ['sluicee.com'],
+  },
 });

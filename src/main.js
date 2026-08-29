@@ -249,10 +249,55 @@ async function renderHits() {
     const res = await fetch(`${pb.baseUrl}/api/hits`, { method: 'POST' });
     if (!res.ok) return;
     const { count } = await res.json();
-    el.textContent = String(count).padStart(7, '0');
+    // текст ставит animateHits() — она запускается уже после исчезновения лоадера,
+    // чтобы отсчёт был виден, а не отыгрывал вхолостую под загрузочным экраном
+    el.dataset.target = String(count);
   } catch {
     // офлайн или PocketBase недоступен — просто не показываем счётчик
   }
+}
+
+function animateHits() {
+  const el = document.querySelector('[data-hits]');
+  if (!el || !el.dataset.target) return;
+  const target = Number(el.dataset.target);
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = String(target).padStart(7, '0');
+    return;
+  }
+
+  const duration = 650;
+  const startedAt = performance.now();
+  function tick(now) {
+    const progress = Math.min(1, (now - startedAt) / duration);
+    const eased = 1 - (1 - progress) ** 3;
+    el.textContent = String(Math.round(target * eased)).padStart(7, '0');
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function stampSeal() {
+  // сама печать всегда в первом экране, так что «появление» для неё — это
+  // момент, когда исчезает загрузочный экран, а не скролл до неё
+  const seal = document.querySelector('.k-seal');
+  if (seal) seal.classList.add('is-stamped');
+}
+
+function wireTiltCards() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.k-still, .k-ticket').forEach((card) => {
+    card.addEventListener('mousemove', (event) => {
+      const rect = card.getBoundingClientRect();
+      const px = (event.clientX - rect.left) / rect.width - 0.5;
+      const py = (event.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `perspective(700px) rotateX(${(-py * 8).toFixed(2)}deg) rotateY(${(px * 10).toFixed(2)}deg) translate(-2px, -2px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
 }
 
 function formatDateTime(pbDate) {
@@ -364,6 +409,8 @@ function hideLoader(startedAt) {
 
   setTimeout(() => {
     loader.classList.add('is-done');
+    animateHits();
+    stampSeal();
     loader.addEventListener('transitionend', () => loader.remove(), { once: true });
     if (reduceMotion) loader.remove();
   }, delay);
@@ -374,6 +421,7 @@ async function initApp() {
 
   renderFooter();
   renderSekki();
+  wireTiltCards();
 
   await Promise.allSettled([
     renderProjects(),

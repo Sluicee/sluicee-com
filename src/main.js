@@ -18,16 +18,10 @@ const SEKKI = [
   [11, 7, '大雪', 'снегопады'], [11, 21, '冬至', 'зимнее солнцестояние']
 ];
 const ROMAN_MONTHS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+const MONTHS_RU_SHORT = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 
-// TODO: заменить на коллекцию PocketBase со ссылками на youtube-видео,
-// когда появится «случайный трек» из реального плейлиста.
-const TRACKS = [
-  'toe — Goodbye',
-  'toe — Grand Deca Trance',
-  'hitsujibungaku — more than words',
-  'Ling tosite Sigure — unravel',
-  'Ling tosite Sigure — abnormalize'
-];
+const LASTFM_USER = 'Sluicee1';
+const LASTFM_API_KEY = import.meta.env.VITE_LASTFM_API_KEY;
 
 function renderSekki() {
   const now = new Date();
@@ -116,17 +110,125 @@ async function renderProjects() {
   }
 }
 
-function wireTrackRoll() {
+function starsFromRating(rating) {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  return '★'.repeat(full) + (half ? '½' : '');
+}
+
+function formatDate(isoDate) {
+  if (!isoDate) return '—';
+  const [y, m, d] = isoDate.split('-').map(Number);
+  return `${String(d).padStart(2, '0')}.${String(m).padStart(2, '0')}.${y}`;
+}
+
+function formatDateLong(isoDate) {
+  if (!isoDate) return '—';
+  const [y, m, d] = isoDate.split('-').map(Number);
+  return `${String(d).padStart(2, '0')} ${MONTHS_RU_SHORT[m - 1]} ${y}`;
+}
+
+async function fetchMediaRecord(key) {
+  try {
+    return await pb.collection('media').getFirstListItem(`key = "${key}"`);
+  } catch {
+    return null;
+  }
+}
+
+async function renderFilm() {
+  const record = await fetchMediaRecord('film');
+  if (!record || !record.data) return;
+  const film = record.data;
+
+  document.querySelectorAll('[data-film-link]').forEach((el) => { el.href = film.link || el.href; });
+
+  const shot = document.querySelector('[data-film-shot]');
+  if (shot && film.image) {
+    shot.style.backgroundImage = `url("${film.image}")`;
+  }
+
+  const reviewEl = document.querySelector('[data-film-review]');
+  if (reviewEl) reviewEl.textContent = film.review || `«${film.filmTitle}»`;
+
+  const watchedEl = document.querySelector('[data-film-watched]');
+  if (watchedEl) watchedEl.textContent = `смотрел · ${formatDate(film.watchedDate)}`;
+
+  const titleEl = document.querySelector('[data-film-title]');
+  if (titleEl) titleEl.textContent = `${film.filmTitle} · ${film.filmYear}`;
+
+  const starsEl = document.querySelector('[data-film-stars]');
+  if (starsEl) starsEl.textContent = film.rating ? starsFromRating(film.rating) : '—';
+
+  const seatEl = document.querySelector('[data-film-seat]');
+  if (seatEl) seatEl.textContent = `席 ${film.seat || '—'}`;
+
+  const watchedFullEl = document.querySelector('[data-film-watched-full]');
+  if (watchedFullEl) watchedFullEl.textContent = formatDateLong(film.watchedDate);
+
+  const yearRatingEl = document.querySelector('[data-film-year-rating]');
+  if (yearRatingEl) {
+    yearRatingEl.textContent = film.rating ? `${film.filmYear} · ${starsFromRating(film.rating)}` : film.filmYear;
+  }
+}
+
+async function fetchLastfmTrack() {
+  if (!LASTFM_API_KEY) return null;
+  try {
+    const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const track = data?.recenttracks?.track?.[0];
+    if (!track) return null;
+    const nowPlaying = track['@attr']?.nowplaying === 'true';
+    return {
+      label: nowPlaying ? 'сейчас · last.fm' : 'последнее · last.fm',
+      text: `${track.artist?.['#text'] || ''} — ${track.name || ''}`,
+      href: track.url || 'https://www.last.fm/user/' + LASTFM_USER,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function applyTrack(track) {
+  const label = document.querySelector('[data-track-label]');
+  const link = document.querySelector('[data-track]');
+  const sub = document.querySelector('[data-track-sub]');
+  if (label) label.textContent = track.label;
+  if (link) {
+    link.textContent = track.text;
+    link.href = track.href;
+  }
+  if (sub) sub.textContent = track.sub || '';
+}
+
+async function renderTapeCard() {
+  const lastfmTrack = await fetchLastfmTrack();
+  if (lastfmTrack) {
+    applyTrack({ ...lastfmTrack, sub: 'перемотать → случайное видео из плейлиста' });
+  } else {
+    applyTrack({ label: 'плейлист · youtube', text: 'нажми «перемотать»', href: '#', sub: 'live-трек с last.fm недоступен' });
+  }
+
+  const playlistRecord = await fetchMediaRecord('youtube_playlist');
+  const videos = playlistRecord?.data?.videos || [];
+
   document.querySelectorAll('[data-roll]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const host = btn.closest('.k-tape-card');
-      const out = host && host.querySelector('[data-track]');
-      if (!out) return;
-      let next = out.textContent.trim();
-      while (next === out.textContent.trim() && TRACKS.length > 1) {
-        next = TRACKS[Math.floor(Math.random() * TRACKS.length)];
+      if (!videos.length) return;
+      const current = document.querySelector('[data-track]')?.href || '';
+      let next = videos[Math.floor(Math.random() * videos.length)];
+      while (videos.length > 1 && `https://www.youtube.com/watch?v=${next.id}` === current) {
+        next = videos[Math.floor(Math.random() * videos.length)];
       }
-      out.textContent = next;
+      applyTrack({
+        label: 'видео · youtube',
+        text: `${next.channel} — ${next.title}`,
+        href: `https://www.youtube.com/watch?v=${next.id}`,
+        sub: 'случайное видео из плейлиста',
+      });
     });
   });
 }
@@ -146,9 +248,10 @@ async function renderHits() {
 
 async function initApp() {
   renderSekki();
-  wireTrackRoll();
   await renderProjects();
   renderHits();
+  renderFilm();
+  renderTapeCard();
 }
 
 initApp();

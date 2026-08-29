@@ -241,10 +241,15 @@ a {
 
 /* — кадр с субтитром — */
 @media (min-width: 1000px) { .page .k-still { grid-column: span 5; transform: rotate(-.4deg); } }
-.page .k-still { padding: 0; overflow: hidden; display: grid; }
+.page .k-still {
+  padding: 0; overflow: hidden; display: grid;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.page a.k-still:hover { transform: rotate(0deg) translate(-2px,-2px); box-shadow: 7px 7px 0 var(--k-blue); }
 .page .k-still .shot {
   position: relative; height: clamp(132px, 20vw, 220px);
   background: linear-gradient(158deg, #2A3350 0%, #131426 48%, #3A1A2A 100%);
+  background-size: cover; background-position: center;
   display: grid; align-items: end; padding: 0 12px 14px;
 }
 .page .k-still .shot::before, .page .k-still .shot::after {
@@ -255,13 +260,15 @@ a {
 .page .k-still .shot::after { bottom: 0; }
 .page .k-still .shot .glow {
   position: absolute; inset: 0;
-  background: radial-gradient(60% 55% at 30% 30%, rgba(239,212,75,.16), transparent 70%);
+  background:
+    linear-gradient(to top, rgba(8,8,12,.78) 0%, rgba(8,8,12,.2) 45%, transparent 68%),
+    radial-gradient(60% 55% at 30% 30%, rgba(239,212,75,.1), transparent 70%);
 }
 .page .k-still .sub {
   position: relative; z-index: 2; text-align: center; color: #F4E88E;
   font-family: "Zen Kaku Gothic New", sans-serif; font-weight: 500; font-size: 14px;
+  line-height: 1.4; max-width: 34ch; margin: 0 auto 4px;
   text-shadow: 1.5px 1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px -1.5px 0 #000;
-  margin-bottom: 4px;
 }
 .page .k-still .meta { padding: 12px 15px 14px; display: grid; gap: 4px; }
 .page .k-still .meta .jp { font-family: "Zen Old Mincho", serif; font-size: 12.5px; color: var(--k-mute); letter-spacing: .12em; }
@@ -272,7 +279,9 @@ a {
 @media (min-width: 1000px) { .page .k-ticket { grid-column: span 3; transform: rotate(1.4deg); } }
 .page .k-ticket {
   padding-left: 26px; display: grid; gap: 4px; align-content: center; background: var(--k-card);
+  transition: transform .18s ease, box-shadow .18s ease;
 }
+.page a.k-ticket:hover { transform: rotate(0deg) translate(-2px,-2px); box-shadow: 7px 7px 0 var(--k-blue); }
 .page .k-ticket::before {
   content: ""; position: absolute; left: 15px; top: 4px; bottom: 4px; width: 2px;
   background: repeating-linear-gradient(180deg, var(--k-ink) 0 3px, transparent 3px 7px);

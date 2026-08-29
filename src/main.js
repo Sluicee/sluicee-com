@@ -353,14 +353,37 @@ async function renderGuestbook() {
   });
 }
 
+function hideLoader(startedAt) {
+  const loader = document.querySelector('[data-loader]');
+  if (!loader) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const minDuration = reduceMotion ? 150 : 900;
+  const elapsed = performance.now() - startedAt;
+  const delay = Math.max(0, minDuration - elapsed);
+
+  setTimeout(() => {
+    loader.classList.add('is-done');
+    loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+    if (reduceMotion) loader.remove();
+  }, delay);
+}
+
 async function initApp() {
+  const startedAt = performance.now();
+
   renderFooter();
   renderSekki();
-  await renderProjects();
-  renderHits();
-  renderFilm();
-  renderTapeCard();
-  renderGuestbook();
+
+  await Promise.allSettled([
+    renderProjects(),
+    renderHits(),
+    renderFilm(),
+    renderTapeCard(),
+    renderGuestbook(),
+  ]);
+
+  hideLoader(startedAt);
 }
 
 initApp();

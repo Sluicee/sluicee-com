@@ -44,6 +44,41 @@ a {
   background-size: 6px 6px; opacity: .05;
 }
 
+/* — экран загрузки: тот же ханко, что и в шапке, только «ставится» — */
+.page .loader {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center; gap: 14px; justify-items: center;
+  background: var(--k-paper);
+  opacity: 1; transition: opacity .35s ease;
+}
+.page .loader.is-done { opacity: 0; pointer-events: none; }
+.page .loader-seal {
+  width: 84px; height: 84px; border-radius: 50%;
+  border: 3px double var(--k-red); color: var(--k-red);
+  display: grid; place-items: center;
+  font-family: "Zen Old Mincho", serif; font-size: 15px; line-height: 1.2; text-align: center;
+  letter-spacing: .06em;
+  animation: loader-stamp .5s cubic-bezier(.2, .9, .3, 1.2) both;
+}
+.page .loader-code {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--k-mute);
+  animation: loader-fade-in .4s ease .25s both;
+}
+@keyframes loader-stamp {
+  0%   { transform: scale(1.9) rotate(-24deg); opacity: 0; }
+  60%  { transform: scale(.94) rotate(-11deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-13deg); opacity: .85; }
+}
+@keyframes loader-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page .loader { transition: none; }
+  .page .loader-seal, .page .loader-code { animation: none; opacity: .85; }
+}
+
 /* — 帯: обичка вдоль левого края — */
 .page .k-obi { display: none; }
 @media (min-width: 1000px) {

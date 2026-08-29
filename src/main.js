@@ -31,6 +31,9 @@ function renderFooter() {
   document.querySelectorAll('[data-rss-link]').forEach((el) => {
     el.href = `${pb.baseUrl}/feed.xml`;
   });
+  document.querySelectorAll('[data-build-stamp]').forEach((el) => {
+    el.textContent = __BUILD_STAMP__;
+  });
 }
 
 function renderSekki() {
@@ -433,12 +436,14 @@ async function renderGuestbook() {
       }
       form.reset();
       if (statusEl) statusEl.textContent = t('guest.sent');
+      // Кулдаун только после успеха — чтобы не было случайного дабл-сабмита,
+      // но при ошибке кнопка сразу разблокируется для повтора.
+      setTimeout(() => { submitBtn.disabled = false; }, 8000);
     } catch {
       if (statusEl) {
         statusEl.textContent = t('guest.error');
         statusEl.classList.add('is-error');
       }
-    } finally {
       submitBtn.disabled = false;
     }
   });

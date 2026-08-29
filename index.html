@@ -111,6 +111,35 @@
           <button type="button" data-roll>▶ перемотать</button>
         </div>
 
+        <div class="k-sec">
+          <h3>芳名録</h3><span class="en">guestbook</span><span class="n" data-guestbook-count>— записей</span>
+        </div>
+
+        <div class="k-m k-guestbook" id="guestbook">
+          <form class="k-guest-form" data-guestbook-form novalidate>
+            <label class="k-guest-field k-guest-name">
+              <span class="k-cap">имя (необязательно)</span>
+              <input type="text" name="name" maxlength="60" placeholder="аноним" autocomplete="off">
+            </label>
+            <label class="k-guest-field k-guest-message">
+              <span class="k-cap">сообщение</span>
+              <textarea name="message" maxlength="500" rows="3" required placeholder="что скажешь"></textarea>
+            </label>
+            <label class="k-guest-hp" aria-hidden="true" tabindex="-1">
+              сайт
+              <input type="text" name="hp_field" tabindex="-1" autocomplete="off">
+            </label>
+            <div class="k-guest-actions">
+              <button type="submit">оставить запись</button>
+              <span class="k-guest-status" data-guestbook-status></span>
+            </div>
+          </form>
+
+          <div class="k-guest-list" data-guestbook-list>
+            <p class="k-guest-empty" data-guestbook-empty>записей пока нет — будь первым</p>
+          </div>
+        </div>
+
         <div class="k-bottom">
           <div class="k-hazard" aria-hidden="true"></div>
           <div class="k-btns">
@@ -122,7 +151,7 @@
             <span class="k-hits" data-hits>——————</span>
           </div>
           <div class="k-foot">
-            <span>© <span data-year>2026</span> sluicee · <a href="https://github.com/Sluicee/sluicee-com" target="_blank" rel="noopener noreferrer">исходники</a> · <a data-rss-link href="#" target="_blank" rel="noopener noreferrer">rss</a> · гостевая книга</span>
+            <span>© <span data-year>2026</span> sluicee · <a href="https://github.com/Sluicee/sluicee-com" target="_blank" rel="noopener noreferrer">исходники</a> · <a data-rss-link href="#" target="_blank" rel="noopener noreferrer">rss</a> · <a href="#guestbook">гостевая книга</a></span>
             <span>сделано дома · 自宅にて</span>
           </div>
         </div>

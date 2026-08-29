@@ -322,6 +322,54 @@ a {
 .page .k-tape-card button:hover { background: var(--k-red); }
 .page .k-tape-card button:focus-visible { outline: 2px solid var(--k-blue); outline-offset: 2px; }
 
+/* — гостевая книга — */
+.page .k-guestbook { grid-column: 1 / -1; display: grid; gap: 22px; }
+@media (min-width: 700px) { .page .k-guestbook { grid-template-columns: 260px minmax(0,1fr); align-items: start; } }
+
+.page .k-guest-form { display: grid; gap: 12px; }
+.page .k-guest-field { display: grid; gap: 5px; }
+.page .k-guest-field input,
+.page .k-guest-field textarea {
+  font: inherit; font-family: "Golos Text", sans-serif; font-size: 13.5px;
+  background: var(--k-paper); border: 1.5px solid var(--k-ink); color: var(--k-ink);
+  padding: 8px 10px; resize: vertical;
+}
+.page .k-guest-field input:focus-visible,
+.page .k-guest-field textarea:focus-visible { outline: 2px solid var(--k-blue); outline-offset: 1px; }
+.page .k-guest-hp {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+.page .k-guest-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.page .k-guest-actions button {
+  font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .08em;
+  background: var(--k-ink); color: #EDEADF; border: none; padding: 9px 16px;
+  cursor: pointer; transition: background .15s ease;
+}
+.page .k-guest-actions button:hover { background: var(--k-red); }
+.page .k-guest-actions button:disabled { opacity: .5; cursor: default; }
+.page .k-guest-actions button:focus-visible { outline: 2px solid var(--k-blue); outline-offset: 2px; }
+.page .k-guest-status {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .06em; color: var(--k-mute);
+}
+.page .k-guest-status.is-error { color: var(--k-red); }
+
+.page .k-guest-list { display: grid; gap: 0; max-height: 340px; overflow-y: auto; }
+.page .k-guest-empty { font-size: 13px; color: var(--k-mute); font-style: italic; }
+.page .k-guest-entry {
+  padding: 12px 0; border-top: 1px solid var(--k-line);
+  display: grid; gap: 3px;
+}
+.page .k-guest-entry:first-child { border-top: none; }
+.page .k-guest-entry .name {
+  font-family: "Zen Old Mincho", serif; font-size: 13.5px; font-weight: 700; color: var(--k-red);
+}
+.page .k-guest-entry .msg { font-size: 13.5px; line-height: 1.55; word-break: break-word; }
+.page .k-guest-entry .date {
+  font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--k-mute);
+}
+
 /* — подвал старого интернета — */
 .page .k-bottom {
   grid-column: 1 / -1; background: none; border: none; box-shadow: none; padding: 0;

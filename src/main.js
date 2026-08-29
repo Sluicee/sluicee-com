@@ -255,6 +255,104 @@ async function renderHits() {
   }
 }
 
+function formatDateTime(pbDate) {
+  if (!pbDate) return '';
+  const date = new Date(pbDate.replace(' ', 'T'));
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  return `${dd} ${MONTHS_RU_SHORT[date.getMonth()]} ${date.getFullYear()}, ${hh}:${mm}`;
+}
+
+function createGuestEntry(entry) {
+  const el = document.createElement('div');
+  el.className = 'k-guest-entry';
+
+  const name = document.createElement('div');
+  name.className = 'name';
+  name.textContent = entry.name;
+
+  const msg = document.createElement('div');
+  msg.className = 'msg';
+  msg.textContent = entry.message;
+
+  const date = document.createElement('div');
+  date.className = 'date';
+  date.textContent = formatDateTime(entry.created);
+
+  el.append(name, msg, date);
+  return el;
+}
+
+async function renderGuestbook() {
+  const list = document.querySelector('[data-guestbook-list]');
+  const countEl = document.querySelector('[data-guestbook-count]');
+  const form = document.querySelector('[data-guestbook-form]');
+  if (!list || !form) return;
+
+  let entries = [];
+  try {
+    entries = await pb.collection('guestbook').getFullList({ sort: '-created' });
+  } catch {
+    // PocketBase недоступен — список останется пустым
+  }
+
+  function renderList() {
+    list.replaceChildren();
+    if (!entries.length) {
+      const empty = document.createElement('p');
+      empty.className = 'k-guest-empty';
+      empty.textContent = 'записей пока нет — будь первым';
+      list.appendChild(empty);
+    } else {
+      entries.forEach((entry) => list.appendChild(createGuestEntry(entry)));
+    }
+    if (countEl) countEl.textContent = `${String(entries.length).padStart(2, '0')} записей`;
+  }
+  renderList();
+
+  const statusEl = document.querySelector('[data-guestbook-status]');
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const message = String(formData.get('message') || '').trim();
+    if (!message) return;
+
+    submitBtn.disabled = true;
+    if (statusEl) { statusEl.textContent = 'отправляю…'; statusEl.classList.remove('is-error'); }
+
+    try {
+      const res = await fetch(`${pb.baseUrl}/api/guestbook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.get('name'),
+          message,
+          hp_field: formData.get('hp_field'),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'request failed');
+
+      if (data.entry) {
+        entries = [data.entry, ...entries];
+        renderList();
+      }
+      form.reset();
+      if (statusEl) statusEl.textContent = 'записано.';
+    } catch {
+      if (statusEl) {
+        statusEl.textContent = 'не получилось отправить, попробуй ещё раз';
+        statusEl.classList.add('is-error');
+      }
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+}
+
 async function initApp() {
   renderFooter();
   renderSekki();
@@ -262,6 +360,7 @@ async function initApp() {
   renderHits();
   renderFilm();
   renderTapeCard();
+  renderGuestbook();
 }
 
 initApp();

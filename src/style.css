@@ -162,6 +162,8 @@ a {
 .page .k-stickers a:nth-child(4) { background: var(--k-red); color: #F3EFE2; transform: rotate(2.4deg); }
 .page .k-stickers a:nth-child(5) { transform: rotate(-2.2deg); clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%); }
 .page .k-stickers a:nth-child(6) { background: var(--k-yel); transform: rotate(1deg); }
+.page .k-stickers a:nth-child(7) { background: #9146FF; color: #F3EFE2; transform: rotate(-1.6deg); border-radius: 20px; }
+.page .k-stickers a:nth-child(8) { background: #1DB954; color: var(--k-ink); transform: rotate(2deg); }
 
 /* — штрих-код — */
 @media (min-width: 1000px) { .page .k-bar { grid-column: span 3; transform: rotate(.9deg); } }

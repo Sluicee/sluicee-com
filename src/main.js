@@ -345,6 +345,40 @@ function wireTiltCards() {
   });
 }
 
+function triggerEasterEgg() {
+  if (document.querySelector('.k-easter')) return;
+
+  const el = document.createElement('div');
+  el.className = 'k-easter';
+  el.innerHTML = `
+    <div>
+      <div class="k-easter-seal">裏<br>技</div>
+      <div class="k-easter-code">SLC-000 · 裏技、見つけた</div>
+    </div>
+  `;
+  document.body.appendChild(el);
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setTimeout(() => {
+    el.classList.add('is-done');
+    el.addEventListener('transitionend', () => el.remove(), { once: true });
+    if (reduceMotion) el.remove();
+  }, reduceMotion ? 1400 : 1800);
+}
+
+function wireEasterEgg() {
+  const sequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  let progress = 0;
+  window.addEventListener('keydown', (event) => {
+    const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    progress = key === sequence[progress] ? progress + 1 : (key === sequence[0] ? 1 : 0);
+    if (progress === sequence.length) {
+      progress = 0;
+      triggerEasterEgg();
+    }
+  });
+}
+
 function formatDateTime(pbDate) {
   if (!pbDate) return '';
   const date = new Date(pbDate.replace(' ', 'T'));
@@ -489,6 +523,7 @@ async function initApp() {
   renderSekki();
   wireTiltCards();
   wireLangSwitch();
+  wireEasterEgg();
 
   await Promise.allSettled([
     renderProjects(),

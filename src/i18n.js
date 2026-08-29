@@ -3,7 +3,8 @@ const SUPPORTED = ['ru', 'en', 'ja'];
 
 const dict = {
   ru: {
-    'bio.poem': 'Стыдно заниматься искусством если, по ходу<br>Конец не встретишь самоубийством или дуркой<br><br>Делаю сервисы для своих. Заработать на этом не получается.',
+    'bio.quote': 'Стыдно заниматься искусством если, по ходу<br>Конец не встретишь самоубийством или дуркой',
+    'bio.own': 'Делаю сервисы для своих. Заработать на этом не получается.',
     'bio.tags': 'Энтузиаст, вайб-кодер, японофил, мерзавец, подлец, себялюбец, лентяй',
     'social.cap': '連絡先 · где меня найти',
     'memo.caption': 'wip',
@@ -40,7 +41,8 @@ const dict = {
     'sekki.sentenceNoGloss': 'Сейчас — «{jp}».',
   },
   en: {
-    'bio.poem': "It's shameful to make art if, along the way,<br>you don't meet your end by suicide or the madhouse<br><br>I build things for people I know. Making money off it never works out.",
+    'bio.quote': "It's shameful to make art if, along the way,<br>you don't meet your end by suicide or the madhouse",
+    'bio.own': 'I build things for people I know. Making money off it never works out.',
     'bio.tags': 'Enthusiast, vibe-coder, japanophile, scoundrel, cad, egotist, sloth',
     'social.cap': '連絡先 · where to find me',
     'memo.caption': 'wip',
@@ -77,7 +79,8 @@ const dict = {
     'sekki.sentenceNoGloss': 'Now — “{jp}”.',
   },
   ja: {
-    'bio.poem': '芸術なんてものは、恥ずかしい話<br>自殺か発狂で終わらないなら<br><br>身内のためにサービスを作っている。それで稼げたことはない。',
+    'bio.quote': '芸術なんてものは、恥ずかしい話<br>自殺か発狂で終わらないなら',
+    'bio.own': '身内のためにサービスを作っている。それで稼げたことはない。',
     'bio.tags': '愛好家、バイブコーダー、日本かぶれ、悪党、卑劣漢、利己主義者、怠け者',
     'social.cap': '連絡先',
     'memo.caption': 'wip',

@@ -23,6 +23,15 @@ const MONTHS_RU_SHORT = ['янв', 'фев', 'мар', 'апр', 'май', 'ию
 const LASTFM_USER = 'Sluicee1';
 const LASTFM_API_KEY = import.meta.env.VITE_LASTFM_API_KEY;
 
+function renderFooter() {
+  document.querySelectorAll('[data-year]').forEach((el) => {
+    el.textContent = String(new Date().getFullYear());
+  });
+  document.querySelectorAll('[data-rss-link]').forEach((el) => {
+    el.href = `${pb.baseUrl}/feed.xml`;
+  });
+}
+
 function renderSekki() {
   const now = new Date();
   let current = SEKKI[0];
@@ -247,6 +256,7 @@ async function renderHits() {
 }
 
 async function initApp() {
+  renderFooter();
   renderSekki();
   await renderProjects();
   renderHits();

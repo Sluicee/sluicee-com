@@ -355,6 +355,12 @@ a {
   font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .1em;
   color: var(--k-mute); text-transform: uppercase;
 }
+.page .k-foot a {
+  text-decoration: underline; text-decoration-color: var(--k-line); text-underline-offset: 2px;
+  transition: color .15s ease, text-decoration-color .15s ease;
+}
+.page .k-foot a:hover { color: var(--k-red); text-decoration-color: var(--k-red); }
+.page a.k-88:hover { filter: brightness(1.08); }
 
 .page a:focus-visible,
 .page button:focus-visible {

@@ -12,6 +12,7 @@
     "vite": "^8.0.0"
   },
   "dependencies": {
+    "gemoji": "^8.1.0",
     "pocketbase": "^0.28.0"
   }
 }

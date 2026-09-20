@@ -2,6 +2,7 @@ import './style.css';
 import { pb } from './lib/pocketbase.js';
 import { getProjects } from './services/projects.js';
 import { t, getLang, onLangChange, cycleLang, initI18n, MONTHS_SHORT } from './i18n.js';
+import { replaceEmojiShortcodes, POPULAR_EMOJIS } from './lib/emoji.js';
 
 // 24 сэкки — настоящий сегмент традиционного календаря по дате в браузере.
 // [месяц, день, кандзи, ru-глосса, en-глосса]; ja-глосса не нужна — кандзи уже японский.
@@ -394,11 +395,11 @@ function createGuestEntry(entry) {
 
   const name = document.createElement('div');
   name.className = 'name';
-  name.textContent = entry.name;
+  name.textContent = replaceEmojiShortcodes(entry.name);
 
   const msg = document.createElement('div');
   msg.className = 'msg';
-  msg.textContent = entry.message;
+  msg.textContent = replaceEmojiShortcodes(entry.message);
 
   const date = document.createElement('div');
   date.className = 'date';
@@ -432,6 +433,30 @@ async function renderGuestbook() {
   const form = document.querySelector('[data-guestbook-form]');
   if (!list || !form) return;
 
+  const emojisContainer = form.querySelector('[data-guestbook-emojis]');
+  const messageInput = form.querySelector('textarea[name="message"]');
+  if (emojisContainer && messageInput) {
+    emojisContainer.replaceChildren();
+    POPULAR_EMOJIS.forEach(({ emoji, code }) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'k-emoji-btn';
+      btn.textContent = emoji;
+      btn.title = code;
+      btn.setAttribute('aria-label', code);
+      btn.addEventListener('click', () => {
+        const start = messageInput.selectionStart ?? messageInput.value.length;
+        const end = messageInput.selectionEnd ?? messageInput.value.length;
+        const val = messageInput.value;
+        messageInput.value = val.slice(0, start) + emoji + val.slice(end);
+        const newPos = start + emoji.length;
+        messageInput.setSelectionRange(newPos, newPos);
+        messageInput.focus();
+      });
+      emojisContainer.appendChild(btn);
+    });
+  }
+
   try {
     guestEntries = await pb.collection('guestbook').getFullList({ sort: '-created' });
   } catch {
@@ -445,8 +470,12 @@ async function renderGuestbook() {
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(form);
-    const message = String(formData.get('message') || '').trim();
-    if (!message) return;
+    const rawMessage = String(formData.get('message') || '').trim();
+    if (!rawMessage) return;
+
+    const rawName = String(formData.get('name') || '').trim();
+    const message = replaceEmojiShortcodes(rawMessage);
+    const name = replaceEmojiShortcodes(rawName);
 
     submitBtn.disabled = true;
     if (statusEl) { statusEl.textContent = t('guest.sending'); statusEl.classList.remove('is-error'); }
@@ -456,7 +485,7 @@ async function renderGuestbook() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: formData.get('name'),
+          name: name || undefined,
           message,
           hp_field: formData.get('hp_field'),
         }),
@@ -482,6 +511,7 @@ async function renderGuestbook() {
     }
   });
 }
+
 
 function hideLoader(startedAt) {
   const loader = document.querySelector('[data-loader]');

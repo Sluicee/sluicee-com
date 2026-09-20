@@ -435,6 +435,24 @@ a {
 }
 .page .k-guest-field input:focus-visible,
 .page .k-guest-field textarea:focus-visible { outline: 2px solid var(--k-blue); outline-offset: 1px; }
+.page .k-guest-emojis {
+  display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 2px;
+}
+.page .k-emoji-btn {
+  font: inherit; font-size: 14px; line-height: 1;
+  background: var(--k-paper); border: 1px solid var(--k-line);
+  padding: 3px 5px; cursor: pointer; transition: background .12s ease, border-color .12s ease, transform .12s ease;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.page .k-emoji-btn:hover {
+  background: var(--k-card); border-color: var(--k-ink); transform: translateY(-1px);
+}
+.page .k-emoji-btn:active { transform: translateY(0); }
+.page .k-emoji-btn:focus-visible { outline: 2px solid var(--k-blue); outline-offset: 1px; }
+.page .k-guest-emoji-hint {
+  font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .03em; color: var(--k-mute);
+  line-height: 1.4; margin-top: 2px;
+}
 .page .k-guest-hp {
   position: absolute; width: 1px; height: 1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap;

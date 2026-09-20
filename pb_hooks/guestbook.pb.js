@@ -15,11 +15,33 @@ routerAdd("POST", "/api/guestbook", (e) => {
     return e.json(200, { ok: true });
   }
 
-  const message = String(body.message || "").trim().slice(0, 500);
-  if (!message) {
+  let nameToEmoji = {};
+  try {
+    nameToEmoji = require(`${__hooks}/nameToEmoji.json`);
+  } catch (err) {
+    try {
+      nameToEmoji = JSON.parse($os.readFile(`${__hooks}/nameToEmoji.json`));
+    } catch (readErr) {
+      console.error("[guestbook emoji load error]", readErr);
+    }
+  }
+
+  function parseShortcodes(text) {
+    if (!text || typeof text !== "string") return text || "";
+    return text.replace(/:([a-zA-Z0-9_+-]+):/g, (match, rawCode) => {
+      const code = rawCode.toLowerCase();
+      return (nameToEmoji && nameToEmoji[code]) ? nameToEmoji[code] : match;
+    });
+  }
+
+  const rawMessage = String(body.message || "").trim().slice(0, 500);
+  if (!rawMessage) {
     return e.json(400, { ok: false, error: "message is required" });
   }
-  const name = String(body.name || "").trim().slice(0, 60) || "аноним";
+  const rawName = String(body.name || "").trim().slice(0, 60) || "аноним";
+
+  const message = parseShortcodes(rawMessage);
+  const name = parseShortcodes(rawName);
 
   const record = new Record(e.app.findCollectionByNameOrId("guestbook"));
   record.set("name", name);

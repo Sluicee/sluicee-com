@@ -3,7 +3,7 @@ const SUPPORTED = ['ru', 'en', 'ja'];
 
 const dict = {
   ru: {
-    'bio.quote': 'Стыдно заниматься искусством если, по ходу<br>Конец не встретишь самоубийством или дуркой',
+    'bio.quote': 'Одинокий холуй что не умеет жить как барин<br>Лучше бы я был ноунеймом чем тщеславным соплежуем',
     'bio.own': 'Делаю сервисы для своих. Заработать на этом не получается.',
     'bio.tags': 'Энтузиаст, вайб-кодер, японофил, мерзавец, подлец, себялюбец, лентяй',
     'social.cap': '連絡先 · где меня найти',
@@ -41,7 +41,7 @@ const dict = {
     'sekki.sentenceNoGloss': 'Сейчас — «{jp}».',
   },
   en: {
-    'bio.quote': "It's shameful to make art if, along the way,<br>you don't meet your end by suicide or the madhouse",
+    'bio.quote': 'A lonely lackey who doesn\'t know how to live like a master<br>I\’d rather be a nobody than a pretentious wimp',
     'bio.own': 'I build things for people I know. Making money off it never works out.',
     'bio.tags': 'Enthusiast, vibe-coder, japanophile, scoundrel, cad, egotist, sloth',
     'social.cap': '連絡先 · where to find me',
@@ -79,7 +79,7 @@ const dict = {
     'sekki.sentenceNoGloss': 'Now — “{jp}”.',
   },
   ja: {
-    'bio.quote': '芸術なんてものは、恥ずかしい話<br>自殺か発狂で終わらないなら',
+    'bio.quote': '旦那のように生きる術も知らぬ、孤独な下僕<br>見栄っ張りな腑抜けより、無名のほうがましだ',
     'bio.own': '身内のためにサービスを作っている。それで稼げたことはない。',
     'bio.tags': '愛好家、バイブコーダー、日本かぶれ、悪党、卑劣漢、利己主義者、怠け者',
     'social.cap': '連絡先',
